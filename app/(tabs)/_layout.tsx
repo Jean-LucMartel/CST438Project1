@@ -4,7 +4,12 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 export default function TabLayout() {
   return (
     
-    <Tabs>
+    <Tabs
+      screenOptions={{
+      tabBarActiveTintColor: "#fa5c5c"
+      } 
+    }  
+    >
 
     //navigation button for home screen
       <Tabs.Screen 
