@@ -42,6 +42,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
         }}
       />
+<<<<<<< HEAD
 <Tabs.Screen
   name="about"
   options={{
@@ -52,6 +53,10 @@ export default function TabLayout() {
   }}
 />
 
+=======
+      <Tabs.Screen name="profile" options={{title :'Profile'}} />
+>>>>>>> 233502e6433a14e973b3bd3ed628b4ccdca91b75
     </Tabs>
+
   );
 }
