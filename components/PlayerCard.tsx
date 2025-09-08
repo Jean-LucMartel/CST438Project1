@@ -9,27 +9,24 @@ type Props = {
 
 export default function PlayerCard({title, position, team, height} : Props) {
     return (
+        
         <View style = {styles.cardContainer}>
             <Text style = {styles.title}>{title}</Text>
 
-            <Text style = {styles.title}>{position}</Text>
-            <Text style = {styles.title}>{team}</Text>
-            <Text style = {styles.title}>{height}</Text>
+            <Text style = {styles.descriptionText}>{position}</Text>
+            <Text style = {styles.descriptionText}>{team}</Text>
+            <Text style = {styles.descriptionText}>{height}</Text>
         </View>
     )
 }
 
 const styles = StyleSheet.create({
     cardContainer: {
-        width: 300,
+        padding: 14,
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: "#e5e5e5",
         backgroundColor: "#fff",
-        borderRadius : 12,
-        padding: 16,
-        margin: 10,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 6,
     },
 
     title: {
@@ -39,6 +36,7 @@ const styles = StyleSheet.create({
 
     descriptionText: {
         fontSize: 16
+
     } 
 
 });
