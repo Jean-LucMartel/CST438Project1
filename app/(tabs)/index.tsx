@@ -1,6 +1,7 @@
 import { Text, View, StyleSheet } from 'react-native';
 import { Link } from 'expo-router'; 
 import Button from '@/components/Button'
+import PlayerCard from '@/components/PlayerCard'
 
 export default function Index() {
   return (
@@ -10,7 +11,6 @@ export default function Index() {
         <Button label="Start ranking players" />
         <Button label="View Teams" />
       </View>
-
     </View>
   );
 }
