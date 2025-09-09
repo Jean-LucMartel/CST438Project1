@@ -1,5 +1,6 @@
-import { Text, View, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
-import PlayerCard from '@/components/PlayerCard'
+import PlayerCard from '@/components/PlayerCard';
+import { SafeAreaView, ScrollView, StyleSheet, Text } from 'react-native';
+
 
 export default function AboutScreen() {
   return (
