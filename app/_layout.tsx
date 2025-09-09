@@ -1,9 +1,18 @@
 import { Stack } from 'expo-router';
+import { SQLiteProvider } from "expo-sqlite";
+import * as SQLite from "expo-sqlite";
+import { migrate, seedExampleMlbPlayers } from "../lib/db";
+
+async function onInit(db: SQLite.SQLiteDatabase) {
+  await migrate(db);
+  await seedExampleMlbPlayers(db);
+}
 
 export default function RootLayout() {
   return (
-    <Stack>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-    </Stack>
+    <SQLiteProvider databaseName="app.db" onInit={migrate}>
+      <Stack screenOptions={{ headerShown: false }} />
+    </SQLiteProvider>
   );
 }
+
