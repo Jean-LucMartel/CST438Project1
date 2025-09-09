@@ -15,7 +15,7 @@ export default function PlayerCard({title, position, team, height} : Props) {
     return (
         
         <View style = {styles.cardContainer}>
-            <Pressable style = {styles.cardContainer} onPress = {() => setModalVisible(true)}>             
+            <Pressable  onPress = {() => setModalVisible(true)}>             
                 <Text style = {styles.title}>{title}</Text>
                 <Text style = {styles.descriptionText}>{position}</Text>
                 <Text style = {styles.descriptionText}>{team}</Text>
