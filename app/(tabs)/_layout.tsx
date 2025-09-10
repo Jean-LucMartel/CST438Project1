@@ -1,15 +1,25 @@
 import { Tabs } from 'expo-router';
 import Ionicons from '@expo/vector-icons/Ionicons';
-
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+// added GestureHandlerRootView to fix the issue of not being able to click on the tab bar icons
 export default function TabLayout() {
   return (
-    
+    <GestureHandlerRootView style={{flex: 1}}> 
     <Tabs
       screenOptions={{
       tabBarActiveTintColor: "#fa5c5c"
       } 
     }  
     >
+{/* navigation button for login screen, just a placeholder to be able to move around tabs will remove later */}
+  <Tabs.Screen 
+        name="login" 
+        options={{ 
+          title: 'Login',
+          tabBarIcon: ({ color, focused }) => (
+              <Ionicons name={focused ? 'home-sharp' : 'home-outline'} color={color} size={24} />
+            )
+        }} />
 
     //navigation button for home screen
       <Tabs.Screen 
@@ -55,5 +65,6 @@ export default function TabLayout() {
     }} />
 
     </Tabs>
+    </GestureHandlerRootView>
   );
 }
