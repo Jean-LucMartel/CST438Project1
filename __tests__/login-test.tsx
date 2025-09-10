@@ -1,6 +1,6 @@
 import React from "react";
 import { render } from "@testing-library/react-native";
-import LoginScreen from "../app/login";
+import LoginScreen from "../app/(tabs)/login";
 
 describe("LoginScreen (smoke)", () => {
   it("renders without crashing", () => {
