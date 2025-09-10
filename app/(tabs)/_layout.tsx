@@ -1,5 +1,5 @@
-import { Tabs } from 'expo-router';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { Tabs } from 'expo-router';
 
 export default function TabLayout() {
   return (
@@ -37,6 +37,28 @@ export default function TabLayout() {
     name = "search"
     options = {{
         title: 'Search',
+        tabBarIcon: ({color, focused}) => (
+            <Ionicons name = {focused ? 'search-sharp' : 'search-outline'} color = {color} size = {24} />
+        )
+
+    }} />
+
+        //navigation button for teams
+    <Tabs.Screen
+    name = "teams"
+    options = {{
+        title: 'Teams',
+        tabBarIcon: ({color, focused}) => (
+            <Ionicons name = {focused ? 'search-sharp' : 'search-outline'} color = {color} size = {24} />
+        )
+
+    }} />
+
+            //navigation button for players
+    <Tabs.Screen
+    name = "TeamPlayers"
+    options = {{
+        title: 'Players',
         tabBarIcon: ({color, focused}) => (
             <Ionicons name = {focused ? 'search-sharp' : 'search-outline'} color = {color} size = {24} />
         )
