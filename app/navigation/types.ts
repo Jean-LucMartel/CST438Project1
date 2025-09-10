@@ -10,6 +10,7 @@ export interface Team {
   idTeam: string;
   strTeam: string;
   strBadge?: string;
+  strDescriptionEN?: string;
 }
 
 export interface Player {

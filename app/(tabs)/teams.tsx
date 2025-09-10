@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import {
   FlatList,
   Image,
+  Modal,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -15,11 +17,12 @@ const sports = ['NFL', 'NBA', 'MLB', 'Soccer', 'NHL'];
 export default function TeamsScreen() {
   const [teams, setTeams] = useState<Team[]>([]);
   const [selectedSport, setSelectedSport] = useState<string | null>(null);
-  
+  const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const fetchTeams = async (sport: string) => {
     let sportQuery = sport;
-    if (sport === 'Soccer') sportQuery = 'English Premier League'; // Example soccer league
+    if (sport === 'Soccer') sportQuery = 'English Premier League';
     const url = `https://www.thesportsdb.com/api/v1/json/3/search_all_teams.php?l=${encodeURIComponent(
       sportQuery
     )}`;
@@ -36,16 +39,23 @@ export default function TeamsScreen() {
     }
   };
 
-const renderTeam = ({ item }: { item: Team }) => (
-  <View style={styles.item}>
-    {item.strBadge ? (
-      <Image source={{ uri: item.strBadge }} style={styles.logo} />
-    ) : (
-      <View style={styles.logoPlaceholder} />
-    )}
-    <Text style={styles.name}>{item.strTeam}</Text>
-  </View>
-);
+  const renderTeam = ({ item }: { item: Team }) => (
+    <TouchableOpacity
+      onPress={() => {
+        setSelectedTeam(item);
+        setModalVisible(true);
+      }}
+    >
+      <View style={styles.item}>
+        {item.strBadge ? (
+          <Image source={{ uri: item.strBadge }} style={styles.logo} />
+        ) : (
+          <View style={styles.logoPlaceholder} />
+        )}
+        <Text style={styles.name}>{item.strTeam}</Text>
+      </View>
+    </TouchableOpacity>
+  );
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -82,6 +92,25 @@ const renderTeam = ({ item }: { item: Team }) => (
           />
         </>
       )}
+
+      <Modal
+        visible={modalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>{selectedTeam?.strTeam}</Text>
+            <ScrollView style={styles.modalBody}>
+              <Text>{selectedTeam?.strDescriptionEN || 'No description available.'}</Text>
+            </ScrollView>
+            <Pressable onPress={() => setModalVisible(false)} style={styles.closeButton}>
+              <Text style={styles.closeButtonText}>Close</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 }
@@ -141,12 +170,43 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 18,
   },
-logoPlaceholder: {
-  width: 40,
-  height: 40,
-  marginRight: 12,
-  backgroundColor: '#ccc',
-  borderRadius: 6,
-},
-  
+  logoPlaceholder: {
+    width: 40,
+    height: 40,
+    marginRight: 12,
+    backgroundColor: '#ccc',
+    borderRadius: 6,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 20,
+    width: '100%',
+    maxHeight: '80%',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 12,
+  },
+  modalBody: {
+    marginBottom: 20,
+  },
+  closeButton: {
+    backgroundColor: '#4A90E2',
+    paddingVertical: 10,
+    borderRadius: 6,
+    alignItems: 'center',
+  },
+  closeButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
 });
