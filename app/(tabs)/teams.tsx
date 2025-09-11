@@ -115,6 +115,11 @@ export default function TeamsScreen() {
   );
 }
 
+<View testID="team-card">
+  {/* your team card content */}
+</View>
+
+
 const styles = StyleSheet.create({
   container: {
     paddingVertical: 20,
