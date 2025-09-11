@@ -1,9 +1,54 @@
-import { Text, View, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { Button, FlatList, Image, StyleSheet, Text, TextInput, View } from 'react-native';
 
-export default function AboutScreen() {
+interface Player {
+  idPlayer: string;
+  strPlayer: string;
+  strThumb: string;
+  strPosition: string;
+  strTeam: string;
+}
+
+export default function SearchScreen() {
+  const [query, setQuery] = useState('');
+  const [players, setPlayers] = useState<Player[]>([]);
+
+  const searchPlayers = async () => {
+    if (!query) return;
+    try {
+      const response = await fetch(`https://www.thesportsdb.com/api/v1/json/3/searchplayers.php?p=${encodeURIComponent(query)}`);
+      const data = await response.json();
+      setPlayers(data.player || []);
+    } catch (error) {
+      console.error('Error fetching player data:', error);
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Search</Text>
+      <TextInput
+        placeholder="Search for a player..."
+        value={query}
+        onChangeText={setQuery}
+        style={styles.input}
+      />
+      <Button title="Search" onPress={searchPlayers} />
+
+      <FlatList
+        data={players}
+        keyExtractor={(item) => item.idPlayer}
+        renderItem={({ item }) => (
+          <View style={styles.card}>
+            {item.strThumb && (
+              <Image source={{ uri: item.strThumb }} style={styles.image} />
+            )}
+            <View style={styles.info}>
+              <Text style={styles.name}>{item.strPlayer}</Text>
+              <Text>{item.strTeam} — {item.strPosition}</Text>
+            </View>
+          </View>
+        )}
+      />
     </View>
   );
 }
@@ -11,11 +56,34 @@ export default function AboutScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 16,
     backgroundColor: '#e6e6e6ff',
-    justifyContent: 'center',
+  },
+  input: {
+    backgroundColor: '#fff',
+    padding: 10,
+    marginBottom: 12,
+    borderRadius: 8,
+  },
+  card: {
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    marginBottom: 12,
+    padding: 10,
+    borderRadius: 8,
     alignItems: 'center',
   },
-  text: {
-    color: '#000000ff',
+  image: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    marginRight: 12,
+  },
+  info: {
+    flex: 1,
+  },
+  name: {
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });

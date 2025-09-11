@@ -1,7 +1,7 @@
-import { Tabs } from 'expo-router';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
-// added GestureHandlerRootView to fix the issue of not being able to click on the tab bar icons
+import { Tabs } from 'expo-router';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
 export default function TabLayout() {
   return (
     <GestureHandlerRootView style={{flex: 1}}> 
@@ -37,10 +37,21 @@ export default function TabLayout() {
       options={{ 
         title: 'Favorites',
         tabBarIcon: ({color, focused}) => (
-            <Ionicons name={focused ? 'baseball-sharp' : 'baseball-outline'} color={color} size={24} />
+            <Ionicons name={focused ? 'star-sharp' : 'star-outline'} color={color} size={24} />
         )
 
       }} />
+
+              //navigation button for teams
+    <Tabs.Screen
+    name = "teams"
+    options = {{
+        title: 'Teams',
+        tabBarIcon: ({color, focused}) => (
+            <Ionicons name = {focused ? 'shirt-sharp' : 'shirt-outline'} color = {color} size = {24} />
+        )
+
+    }} />
 
     //navigation button for search
     <Tabs.Screen
@@ -59,7 +70,7 @@ export default function TabLayout() {
     options = {{
         title: 'Profile',
         tabBarIcon: ({color, focused}) => (
-          <Ionicons name = {focused ? 'happy-sharp' : 'happy-outline'} color = {color} size = {24} />
+          <Ionicons name = {focused ? 'person-sharp' : 'person-outline'} color = {color} size = {24} />
         )
 
     }} />
