@@ -46,6 +46,9 @@ export default function SearchScreen() {
               <Text style={styles.name}>{item.strPlayer}</Text>
               <Text>{item.strTeam} — {item.strPosition}</Text>
             </View>
+            <View>
+              <Button title = "favorite" color = '#fa5c5c'></Button>
+            </View>
           </View>
         )}
       />
@@ -86,4 +89,5 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
   },
+  
 });
