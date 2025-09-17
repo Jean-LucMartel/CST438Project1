@@ -86,16 +86,18 @@ export default function SearchScreen() {
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             {selectedPlayer?.strThumb && (
-              <Image source={{ uri: selectedPlayer.strThumb }} style={styles.modalImage} />
+              <Image
+                source={{ uri: selectedPlayer.strThumb || selectedPlayer.strThumb }}
+                style={styles.modalImage}
+              />
             )}
-            <Text style={styles.modalName}>{selectedPlayer?.strPlayer}</Text>
-            <Text>Team: {selectedPlayer?.strTeam}</Text>
-            <Text>Position: {selectedPlayer?.strPosition}</Text>
-            {selectedPlayer?.strNationality && <Text>Nationality: {selectedPlayer.strNationality}</Text>}
-            {selectedPlayer?.strSport && <Text>Sport: {selectedPlayer.strSport}</Text>}
-            {selectedPlayer?.strStatus && <Text>Status: {selectedPlayer.strStatus}</Text>}
-            {selectedPlayer?.dateBorn && <Text>Born: {selectedPlayer.dateBorn}</Text>}<br></br>
-
+          <Text style={styles.modalName}>{selectedPlayer?.strPlayer}</Text>
+          <Text style={styles.modalText}>Team: {selectedPlayer?.strTeam}</Text>
+          <Text style={styles.modalText}>Position: {selectedPlayer?.strPosition}</Text>
+          {selectedPlayer?.strNationality && <Text style={styles.modalText}>Nationality: {selectedPlayer.strNationality}</Text>}
+          {selectedPlayer?.strSport && <Text style={styles.modalText}>Sport: {selectedPlayer.strSport}</Text>}
+          {selectedPlayer?.strStatus && <Text style={styles.modalText}>Status: {selectedPlayer.strStatus}</Text>}
+          {selectedPlayer?.dateBorn && <Text style={styles.modalText}>Born: {selectedPlayer.dateBorn}</Text>}
             <Button title="Close" onPress={closeModal} />
           </View>
         </View>
@@ -152,14 +154,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalImage: {
-    width: 100,
-    height: 100,
+    width: 200,
+    height: 200,
     borderRadius: 50,
     marginBottom: 16,
   },
   modalName: {
-    fontSize: 20,
+    fontSize: 30,
     fontWeight: 'bold',
     marginBottom: 8,
   },
+  modalText: {
+  fontSize: 18,
+  marginBottom: 6,
+},
 });
