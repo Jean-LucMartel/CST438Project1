@@ -1,5 +1,5 @@
 import PlayerCard from '@/components/PlayerCard';
-import { SafeAreaView, ScrollView, StyleSheet, Text, FlatList, Image, View, Button } from 'react-native';
+import { SafeAreaView, ScrollView, StyleSheet, Text, FlatList, Image, View, Button} from 'react-native';
 import { useFavorites } from '../favorites/FavoritesProvider'
 
 
@@ -24,8 +24,8 @@ export default function AboutScreen() {
       renderItem={({ item }) => (
         <View style={styles.row}>
           {item.strThumb ? (
-            <Image source={{ uri: item.strThumb }} style={styles.thumb} />
-          ) : <View style={[styles.thumb, {backgroundColor: '#eee'}]} />}
+            <Image source={{ uri: item.strThumb }} style={styles.image} />
+          ) : <View style={[styles.image, {backgroundColor: '#eee'}]} />}
 
           <View style={{ flex: 1 }}>
             <Text style={styles.name}>{item.strPlayer}</Text>
@@ -47,15 +47,7 @@ export default function AboutScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-    backgroundColor: '#e6e6e6ff',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+  
   sectionTitle: {
     fontSize: 18,
     fontWeight: "700",
@@ -66,15 +58,29 @@ const styles = StyleSheet.create({
   text: {
     color: '#000000ff',
   },
-  scrollContent: {
-    paddingHorizontal: 16,
-    paddingBottom: 24,
-    gap: 12
+  row: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    marginBottom: 12, 
+    gap: 12, 
+    backgroundColor: 'white',
+    padding: 16,
+    borderRadius: 8
   },
-  row: { flexDirection: 'row', alignItems: 'center', marginBottom: 12, gap: 12 },
-  thumb: { width: 56, height: 56, borderRadius: 8 },
-  name: { fontWeight: '600' },
-  meta: { color: '#666', marginTop: 2 },
+  image: { 
+    width: 64, 
+    height: 64, 
+    borderRadius: 32 
+  },
+  name: { 
+    fontWeight: 'bold',
+    fontSize: 16 
+  },
+  meta: { 
+    color: '#666', 
+    marginTop: 2,
+    flex: 1
+  },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   emptyText: { color: '#666' },
 });

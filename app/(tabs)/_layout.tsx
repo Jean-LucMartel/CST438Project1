@@ -6,7 +6,7 @@ import { FavoritesProvider } from "../favorites/FavoritesProvider"
 export default function TabLayout() {
   return (
     <GestureHandlerRootView style={{flex: 1}}> 
-    <FavoritesProvider>
+    <FavoritesProvider children={undefined}>
     <Tabs
       screenOptions={{
       tabBarActiveTintColor: "#fa5c5c"
