@@ -8,8 +8,11 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
+  Pressable
 } from 'react-native';
+import { useFavorites } from '../favorites/FavoritesProvider';
+
 
 interface Player {
   idPlayer: string;
@@ -28,6 +31,8 @@ export default function SearchScreen() {
   const [players, setPlayers] = useState<Player[]>([]);
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const { isFavorite, toggle } = useFavorites();
+
 
   const searchPlayers = async () => {
     if (!query) return;
@@ -64,8 +69,11 @@ export default function SearchScreen() {
       <FlatList
         data={players}
         keyExtractor={(item) => item.idPlayer}
-        renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => openModal(item)} style={styles.card}>
+renderItem={({ item }) => {
+  const fav = isFavorite(item.idPlayer);
+  return (
+    <TouchableOpacity onPress={() => openModal(item)} style={styles.card}>
+
             {item.strThumb && (
               <Image source={{ uri: item.strThumb }} style={styles.image} />
             )}
@@ -73,8 +81,33 @@ export default function SearchScreen() {
               <Text style={styles.name}>{item.strPlayer}</Text>
               <Text>{item.strTeam} — {item.strPosition}</Text>
             </View>
-          </TouchableOpacity>
-        )}
+<TouchableOpacity onPress={() => openModal(item)} style={styles.card}>
+  {/* Player card contents here */}
+  <View>
+    {/* Favorite Button */}
+    <Pressable
+      onPress={() =>
+        toggle({
+          idPlayer: item.idPlayer,
+          strPlayer: item.strPlayer,
+          strThumb: item.strThumb,
+          strTeam: item.strTeam,
+          strPosition: item.strPosition,
+        })
+      }
+      style={({ pressed }) => [
+        styles.favBtn,
+        fav ? styles.favBtnOn : styles.favBtnOff,
+        pressed && { opacity: 0.7 },
+      ]}
+    >
+      <Text style={styles.favBtnText}>
+        {fav ? 'Unfavorite' : 'Favorite'}
+      </Text>
+    </Pressable>
+  </View>
+</TouchableOpacity>
+
       />
 
       <Modal
@@ -164,8 +197,25 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 8,
   },
-  modalText: {
+modalText: {
   fontSize: 18,
   marginBottom: 6,
 },
+favBtn: {
+  paddingVertical: 8,
+  paddingHorizontal: 12,
+  borderRadius: 8,
+  alignItems: 'center',
+},
+favBtnOn: {
+  backgroundColor: '#030202ff',
+},
+favBtnOff: {
+  backgroundColor: '#fa5c5c',
+},
+favBtnText: {
+  color: '#fff',
+  fontWeight: '600',
+},
+
 });

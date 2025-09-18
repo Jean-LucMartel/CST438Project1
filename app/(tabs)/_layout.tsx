@@ -1,15 +1,27 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Tabs } from 'expo-router';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { FavoritesProvider } from "../favorites/FavoritesProvider"
 
 export default function TabLayout() {
   return (
-    
+    <GestureHandlerRootView style={{flex: 1}}> 
+    <FavoritesProvider children={undefined}>
     <Tabs
       screenOptions={{
       tabBarActiveTintColor: "#fa5c5c"
       } 
     }  
     >
+{/* navigation button for login screen, just a placeholder to be able to move around tabs will remove later */}
+  <Tabs.Screen 
+        name="login" 
+        options={{ 
+          title: 'Login',
+          tabBarIcon: ({ color, focused }) => (
+              <Ionicons name={focused ? 'home-sharp' : 'home-outline'} color={color} size={24} />
+            )
+        }} />
 
     //navigation button for home screen
       <Tabs.Screen 
@@ -20,6 +32,9 @@ export default function TabLayout() {
             <Ionicons name={focused ? 'home-sharp' : 'home-outline'} color={color} size={24} />
           )
       }} />
+    //hidden route for top 10 ranking page
+      <Tabs.Screen name="rank" options={{ href: null }} />
+
 
     //navigation button for favorites
       <Tabs.Screen 
@@ -66,5 +81,7 @@ export default function TabLayout() {
     }} />
 
     </Tabs>
+    </FavoritesProvider>
+    </GestureHandlerRootView>
   );
 }
