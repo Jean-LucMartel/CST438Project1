@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Button, FlatList, Image, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useFavorites } from '../favorites/FavoritesProvider'; 
 
 interface Player {
   idPlayer: string;
@@ -12,6 +13,7 @@ interface Player {
 export default function SearchScreen() {
   const [query, setQuery] = useState('');
   const [players, setPlayers] = useState<Player[]>([]);
+  const { isFavorite, toggle } = useFavorites();
 
   const searchPlayers = async () => {
     if (!query) return;
@@ -37,7 +39,9 @@ export default function SearchScreen() {
       <FlatList
         data={players}
         keyExtractor={(item) => item.idPlayer}
-        renderItem={({ item }) => (
+        renderItem={({ item }) => {
+          const fav = isFavorite(item.idPlayer);
+          return (
           <View style={styles.card}>
             {item.strThumb && (
               <Image source={{ uri: item.strThumb }} style={styles.image} />
@@ -47,10 +51,23 @@ export default function SearchScreen() {
               <Text>{item.strTeam} — {item.strPosition}</Text>
             </View>
             <View>
-              <Button title = "favorite" color = '#fa5c5c'></Button>
+              <Button
+                  title={fav ? 'Unfavorite' : 'Favorite'}
+                  color={fav ? '#555' : '#fa5c5c'}
+                  onPress={() =>
+                    toggle({
+                      idPlayer: item.idPlayer,
+                      strPlayer: item.strPlayer,
+                      strThumb: item.strThumb,
+                      strTeam: item.strTeam,
+                      strPosition: item.strPosition,
+                    })
+                  }
+                />
             </View>
           </View>
-        )}
+          );
+        }}
       />
     </View>
   );

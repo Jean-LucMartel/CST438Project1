@@ -1,10 +1,12 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Tabs } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { FavoritesProvider } from "../favorites/FavoritesProvider"
 
 export default function TabLayout() {
   return (
     <GestureHandlerRootView style={{flex: 1}}> 
+    <FavoritesProvider>
     <Tabs
       screenOptions={{
       tabBarActiveTintColor: "#fa5c5c"
@@ -76,6 +78,7 @@ export default function TabLayout() {
     }} />
 
     </Tabs>
+    </FavoritesProvider>
     </GestureHandlerRootView>
   );
 }
