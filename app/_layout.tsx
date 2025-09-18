@@ -1,13 +1,13 @@
 import { Stack } from "expo-router";
-import { SQLiteProvider } from "expo-sqlite";
 import * as SQLite from "expo-sqlite";
+import { SQLiteProvider } from "expo-sqlite";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-import { migrate, seedExampleMlbPlayers } from "../lib/db";
+import { migrate, repairUsersTable } from "../lib/db";
 
 async function onInit(db: SQLite.SQLiteDatabase) {
   await migrate(db);             
-  await seedExampleMlbPlayers(db);
+  await repairUsersTable(db);
 }
 
 export default function RootLayout() {

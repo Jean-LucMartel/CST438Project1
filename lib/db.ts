@@ -1,6 +1,13 @@
+import * as Crypto from "expo-crypto";
 import { useSQLiteContext, type SQLiteDatabase } from "expo-sqlite";
 
-export type User = { id?: number; username: string; created_at: string };
+export type User = {
+  id?: number;
+  username: string;
+  created_at: string;
+  email?: string | null;
+  auth_token?: string | null;
+};
 
 export function useDb() {
   return useSQLiteContext();
@@ -13,10 +20,13 @@ export async function migrate(db: SQLiteDatabase) {
 
     /* existing users table */
     CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      username TEXT NOT NULL UNIQUE,
-      created_at TEXT NOT NULL
-    );
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username      TEXT NOT NULL UNIQUE,
+    email         TEXT UNIQUE,
+    password_hash TEXT,
+    auth_token    TEXT UNIQUE,
+    created_at    TEXT NOT NULL
+  );
 
     /* MLB tables */
     CREATE TABLE IF NOT EXISTS mlb_teams (
@@ -56,8 +66,119 @@ export async function migrate(db: SQLiteDatabase) {
 
     CREATE INDEX IF NOT EXISTS idx_mlb_players_team_id ON mlb_players(team_id);
     CREATE INDEX IF NOT EXISTS idx_mlb_players_last_first ON mlb_players(name_last, name_first);
+
+    /* Sports catalog (optional) */
+  CREATE TABLE IF NOT EXISTS sports (
+    code TEXT PRIMARY KEY,         -- e.g. 'mlb', 'nba'
+    name TEXT
+  );
+
+  /* Generic players table (works for any sport) */
+  CREATE TABLE IF NOT EXISTS players (
+    sport     TEXT NOT NULL,
+    player_id TEXT NOT NULL,       -- keep as TEXT to handle non-numeric ids
+    first_name TEXT,
+    last_name  TEXT,
+    display_name TEXT,
+    position   TEXT,
+    team_id    TEXT,
+    active_sw  TEXT,
+    PRIMARY KEY (sport, player_id)
+  );
+
+  /* Favorites per user & sport */
+  CREATE TABLE IF NOT EXISTS favorites (
+    user_id   INTEGER NOT NULL,
+    sport     TEXT NOT NULL,
+    player_id TEXT NOT NULL,
+    created_at INTEGER NOT NULL,
+    PRIMARY KEY (user_id, sport, player_id),
+    FOREIGN KEY (sport, player_id) REFERENCES players (sport, player_id) ON DELETE CASCADE
+  );
+  CREATE INDEX IF NOT EXISTS idx_favorites_user_sport ON favorites(user_id, sport);
+
+  /* Ranking lists (one per save) */
+  CREATE TABLE IF NOT EXISTS ranking_lists (
+    id        INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id   INTEGER NOT NULL,
+    sport     TEXT NOT NULL,
+    title     TEXT NOT NULL,
+    created_at INTEGER NOT NULL DEFAULT (strftime('%s','now')),
+    updated_at INTEGER NOT NULL DEFAULT (strftime('%s','now'))
+  );
+
+  /* Exactly-ranked items 1..10 for a list */
+  CREATE TABLE IF NOT EXISTS ranking_list_items (
+    list_id   INTEGER NOT NULL,
+    rank      INTEGER NOT NULL,     -- 1..10
+    sport     TEXT NOT NULL,
+    player_id TEXT NOT NULL,
+    PRIMARY KEY (list_id, rank),
+    UNIQUE (list_id, sport, player_id),
+    FOREIGN KEY (list_id) REFERENCES ranking_lists(id) ON DELETE CASCADE,
+    FOREIGN KEY (sport, player_id) REFERENCES players(sport, player_id)
+  );
+  `);
+  await patchAuthColumns(db);
+}
+
+async function columnExists(db: SQLiteDatabase, table: string, column: string) {
+  const rows = await db.getAllAsync<{ name: string }>(`PRAGMA table_info(${table});`);
+  return rows.some((r) => r.name === column);
+}
+
+async function addColumnIfMissing(
+  db: SQLiteDatabase,
+  table: string,
+  column: string,
+  decl: string
+) {
+  if (!(await columnExists(db, table, column))) {
+    await db.execAsync(`ALTER TABLE ${table} ADD COLUMN ${column} ${decl};`);
+  }
+}
+
+export async function patchAuthColumns(db: SQLiteDatabase) {
+  await addColumnIfMissing(db, "users", "email", "TEXT");
+  await addColumnIfMissing(db, "users", "password_hash", "TEXT");
+  await addColumnIfMissing(db, "users", "auth_token", "TEXT");
+
+  await db.execAsync(`
+    CREATE UNIQUE INDEX IF NOT EXISTS ux_users_email ON users(email);
+    CREATE UNIQUE INDEX IF NOT EXISTS ux_users_auth_token ON users(auth_token);
   `);
 }
+
+const normalizeEmail = (e: string) => e.trim().toLowerCase();
+
+export async function generateAuthToken(length = 32) {
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const bytes = await Crypto.getRandomBytesAsync(length);
+  let out = "";
+  for (const b of bytes) out += alphabet[b % alphabet.length];
+  return out;
+}
+
+async function hashPassword(password: string, salt?: string) {
+  const s = salt ?? (await generateAuthToken(16));
+  const digest = await Crypto.digestStringAsync(
+    Crypto.CryptoDigestAlgorithm.SHA256,
+    s + password
+  );
+  return `${s}$${digest}`;
+}
+
+async function verifyPassword(stored: string | null, password: string) {
+  if (!stored) return false;
+  const [salt, hash] = stored.split("$");
+  const check = await Crypto.digestStringAsync(
+    Crypto.CryptoDigestAlgorithm.SHA256,
+    salt + password
+  );
+  return check === hash;
+}
+
+
 
 export async function getUserByUsername(
   db: SQLiteDatabase,
@@ -69,6 +190,111 @@ export async function getUserByUsername(
   );
   return row ?? null;
 }
+
+export async function repairUsersTable(db: SQLiteDatabase) {
+
+  const cols = await db.getAllAsync<{ name: string; notnull: number }>(`PRAGMA table_info(users);`);
+  const hasPassword = cols.some(c => c.name === "password");
+  const hasPasswordHash = cols.some(c => c.name === "password_hash");
+  const hasEmail = cols.some(c => c.name === "email");
+  const hasAuth = cols.some(c => c.name === "auth_token");
+  const hasCreatedAt = cols.some(c => c.name === "created_at");
+
+
+  if (!hasPassword && hasPasswordHash && hasEmail && hasAuth && hasCreatedAt) return;
+
+  await db.execAsync(`
+    BEGIN TRANSACTION;
+
+    CREATE TABLE IF NOT EXISTS users_tmp (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      username     TEXT NOT NULL UNIQUE,
+      email        TEXT UNIQUE,
+      password_hash TEXT,             -- nullable to allow migration; app enforces writing it
+      auth_token    TEXT UNIQUE,
+      created_at    TEXT NOT NULL
+    );
+
+    INSERT INTO users_tmp (id, username, email, password_hash, auth_token, created_at)
+      SELECT
+        id,
+        username,
+        ${hasEmail ? "email" : "NULL"} AS email,
+        ${hasPasswordHash ? "password_hash" : hasPassword ? "password" : "NULL"} AS password_hash,
+        ${hasAuth ? "auth_token" : "NULL"} AS auth_token,
+        ${hasCreatedAt ? "created_at" : "CURRENT_TIMESTAMP"} AS created_at
+      FROM users;
+
+    DROP TABLE users;
+    ALTER TABLE users_tmp RENAME TO users;
+
+    CREATE UNIQUE INDEX IF NOT EXISTS ux_users_email ON users(email);
+    CREATE UNIQUE INDEX IF NOT EXISTS ux_users_auth_token ON users(auth_token);
+
+    COMMIT;
+  `);
+}
+
+export async function createUserWithPassword(
+  db: SQLiteDatabase,
+  { username, email, password }: { username: string; email: string; password: string }
+): Promise<User> {
+  const created_at = new Date().toISOString();
+  const password_hash = await hashPassword(password);
+  const auth_token = await generateAuthToken();
+  const emailNorm = normalizeEmail(email);
+
+  await db.runAsync(
+    `INSERT INTO users (username, created_at, email, password_hash, auth_token)
+     VALUES (?, ?, ?, ?, ?)`,
+    [username, created_at, emailNorm, password_hash, auth_token]
+  );
+
+  const row = await db.getFirstAsync<User>(
+    `SELECT id, username, created_at, email, auth_token FROM users WHERE email = ?`,
+    [emailNorm]
+  );
+
+  if (!row) throw new Error("Failed to create user");
+  return row;
+}
+
+export async function loginWithEmailPassword(
+  db: SQLiteDatabase,
+  email: string,
+  password: string
+): Promise<User | null> {
+  const emailNorm = normalizeEmail(email);
+  const row = await db.getFirstAsync<{
+    id: number;
+    username: string;
+    created_at: string;
+    email: string | null;
+    password_hash: string | null;
+    auth_token: string | null;
+  }>(`SELECT * FROM users WHERE email = ?`, [emailNorm]);
+
+  if (!row) return null;
+  const ok = await verifyPassword(row.password_hash, password);
+  if (!ok) return null;
+
+  if (!row.auth_token) {
+    row.auth_token = await generateAuthToken();
+    await db.runAsync(`UPDATE users SET auth_token = ? WHERE id = ?`, [
+      row.auth_token,
+      row.id,
+    ]);
+  }
+
+  return {
+    id: row.id,
+    username: row.username,
+    created_at: row.created_at,
+    email: row.email,
+    auth_token: row.auth_token,
+  };
+}
+
 
 export type MlbTeam = {
   team_id: number;
@@ -136,6 +362,49 @@ export type MlbApiRow = {
   service_years?: string;
   active_sw?: string;
 };
+
+export type FavPlayer = { player_id: string; display_name: string };
+
+export async function getFavoritedPlayersBySport(
+  db: SQLiteDatabase,
+  userId: number,
+  sport: string
+): Promise<FavPlayer[]> {
+  return db.getAllAsync<FavPlayer>(
+    `SELECT p.player_id, COALESCE(p.display_name, TRIM(p.first_name||' '||p.last_name)) as display_name
+     FROM favorites f
+     JOIN players p ON p.sport = f.sport AND p.player_id = f.player_id
+     WHERE f.user_id = ? AND f.sport = ?
+     ORDER BY display_name COLLATE NOCASE`,
+    [userId, sport]
+  );
+}
+
+export async function createRankingList(
+  db: SQLiteDatabase,
+  { userId, sport, title }: { userId: number; sport: string; title: string }
+): Promise<number> {
+  await db.runAsync(
+    `INSERT INTO ranking_lists (user_id, sport, title) VALUES (?, ?, ?)`,
+    [userId, sport, title]
+  );
+  const row = await db.getFirstAsync<{ id: number }>(`SELECT last_insert_rowid() as id`);
+  return row!.id;
+}
+
+export async function saveRankingListItems(
+  db: SQLiteDatabase,
+  listId: number,
+  sport: string,
+  items: Array<{ rank: number; player_id: string }>
+) {
+  await db.execAsync(`UPDATE ranking_lists SET updated_at = strftime('%s','now') WHERE id = ${listId};`);
+  await db.execAsync(`DELETE FROM ranking_list_items WHERE list_id = ${listId};`);
+  const stmt = `INSERT INTO ranking_list_items (list_id, rank, sport, player_id) VALUES (?, ?, ?, ?)`;
+  for (const it of items) {
+    await db.runAsync(stmt, [listId, it.rank, sport, it.player_id]);
+  }
+}
 
 
 const toInt = (s?: string | null) =>
