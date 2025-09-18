@@ -4,36 +4,35 @@ type Props = {
   label: string;
 };
 
-export default function Button({ label }: Props) {
+export default function Button({
+  label,
+  onPress,
+  disabled,
+}: {
+  label: string;
+  onPress?: () => void;
+  disabled?: boolean;
+}) {
   return (
-    <View style={styles.buttonContainer}>
-      <Pressable style={styles.button} onPress={() => alert('You pressed a button.')}>
-        <Text style={styles.buttonLabel}>{label}</Text>
-      </Pressable>
-    </View>
+    <Pressable
+      onPress={onPress}
+      disabled={disabled}
+      style={({ pressed }) => [
+        styles.btn,
+        pressed && styles.pressed,
+        disabled && styles.disabled,
+      ]}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+    >
+      <Text style={styles.label}>{label}</Text>
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  buttonContainer: {
-    width: 320,
-    height: 68,
-    marginHorizontal: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 3,
-  },
-  button: {
-    borderRadius: 10,
-    width: '100%',
-    height: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    backgroundColor: '#fa5c5c',
-  },
-  buttonLabel: {
-    color: '#fff',
-    fontSize: 16,
-  },
+  btn: { paddingVertical: 12, paddingHorizontal: 16, borderRadius: 12, backgroundColor: "#111" },
+  pressed: { opacity: 0.85 },
+  disabled: { opacity: 0.5 },
+  label: { color: "#fff", fontWeight: "700", textAlign: "center" },
 });

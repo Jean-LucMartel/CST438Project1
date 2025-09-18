@@ -30,6 +30,9 @@ export default function TabLayout() {
             <Ionicons name={focused ? 'home-sharp' : 'home-outline'} color={color} size={24} />
           )
       }} />
+    //hidden route for top 10 ranking page
+      <Tabs.Screen name="rank" options={{ href: null }} />
+
 
     //navigation button for favorites
       <Tabs.Screen 
