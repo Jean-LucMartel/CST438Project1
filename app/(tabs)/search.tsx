@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Button, FlatList, Image, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Button, FlatList, Image, StyleSheet, Text, TextInput, View , Pressable} from 'react-native';
+import { useFavorites } from '../favorites/FavoritesProvider'; 
 
 interface Player {
   idPlayer: string;
@@ -12,6 +13,7 @@ interface Player {
 export default function SearchScreen() {
   const [query, setQuery] = useState('');
   const [players, setPlayers] = useState<Player[]>([]);
+  const { isFavorite, toggle } = useFavorites();
 
   const searchPlayers = async () => {
     if (!query) return;
@@ -37,7 +39,9 @@ export default function SearchScreen() {
       <FlatList
         data={players}
         keyExtractor={(item) => item.idPlayer}
-        renderItem={({ item }) => (
+        renderItem={({ item }) => {
+          const fav = isFavorite(item.idPlayer);
+          return (
           <View style={styles.card}>
             {item.strThumb && (
               <Image source={{ uri: item.strThumb }} style={styles.image} />
@@ -46,8 +50,31 @@ export default function SearchScreen() {
               <Text style={styles.name}>{item.strPlayer}</Text>
               <Text>{item.strTeam} — {item.strPosition}</Text>
             </View>
+            <View>
+              <Pressable
+                onPress={() =>
+                  toggle({
+                    idPlayer: item.idPlayer,
+                    strPlayer: item.strPlayer,
+                    strThumb: item.strThumb,
+                    strTeam: item.strTeam,
+                    strPosition: item.strPosition,
+                  })
+                }
+                style={({ pressed }) => [
+                  styles.favBtn,
+                  fav ? styles.favBtnOn : styles.favBtnOff,
+                  pressed && { opacity: 0.7 }, 
+                ]}
+              >
+                <Text style={styles.favBtnText}>
+                  {fav ? 'Unfavorite' : 'Favorite'}
+                </Text>
+              </Pressable>
+            </View>
           </View>
-        )}
+          );
+        }}
       />
     </View>
   );
@@ -86,4 +113,21 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
   },
+  favBtn: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  favBtnOn: {
+    backgroundColor: '#030202ff',
+  },
+  favBtnOff: {
+    backgroundColor: '#fa5c5c',
+  },
+  favBtnText: {
+    color: '#fff',
+    fontWeight: '600',
+  },
+  
 });
