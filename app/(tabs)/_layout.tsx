@@ -1,6 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Tabs } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+// import { migrate } from '../src/services/db';
 
 export default function TabLayout() {
   return (
@@ -21,7 +22,7 @@ export default function TabLayout() {
             )
         }} />
 
-    //navigation button for home screen
+    {/* navigation button for home screen */}
       <Tabs.Screen 
       name="index" 
       options={{ 
@@ -31,7 +32,7 @@ export default function TabLayout() {
           )
       }} />
 
-    //navigation button for favorites
+    {/* navigation button for favorites */}
       <Tabs.Screen 
       name="favorites" 
       options={{ 
@@ -42,7 +43,7 @@ export default function TabLayout() {
 
       }} />
 
-              //navigation button for teams
+    {/* navigation button for teams */}
     <Tabs.Screen
     name = "teams"
     options = {{
@@ -53,7 +54,7 @@ export default function TabLayout() {
 
     }} />
 
-    //navigation button for search
+    {/* navigation button for search */}
     <Tabs.Screen
     name = "search"
     options = {{
@@ -64,7 +65,7 @@ export default function TabLayout() {
 
     }} />
 
-    //navigation button for profilepage
+    {/* navigation button for profilepage */}
     <Tabs.Screen
     name = "profilepage"
     options = {{
@@ -74,6 +75,16 @@ export default function TabLayout() {
         )
 
     }} />
+    
+    {/* quick check to check if sanity is working */}
+    <Tabs.Screen
+    name="sanity"
+    options={{
+        title: "Sanity",
+        tabBarIcon: ({ color, focused }) => (
+          <Ionicons name={focused ? "bug" : "bug-outline"} color={color} size={24} />
+        ),
+    }}  />
 
     </Tabs>
     </GestureHandlerRootView>
