@@ -4,15 +4,14 @@ import {
   FlatList,
   Image,
   Modal,
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
-  Pressable
 } from 'react-native';
 import { useFavorites } from '../favorites/FavoritesProvider';
-
 
 interface Player {
   idPlayer: string;
@@ -33,13 +32,15 @@ export default function SearchScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const { isFavorite, toggle } = useFavorites();
 
-
   const searchPlayers = async () => {
     if (!query) return;
     try {
-      const response = await fetch(`https://www.thesportsdb.com/api/v1/json/3/searchplayers.php?p=${encodeURIComponent(query)}`);
+      const response = await fetch(
+        `https://www.thesportsdb.com/api/v1/json/3/searchplayers.php?p=${encodeURIComponent(
+          query
+        )}`
+      );
       const data = await response.json();
-      console.log(data)
       setPlayers(data.player || []);
     } catch (error) {
       console.error('Error fetching player data:', error);
@@ -69,45 +70,43 @@ export default function SearchScreen() {
       <FlatList
         data={players}
         keyExtractor={(item) => item.idPlayer}
-renderItem={({ item }) => {
-  const fav = isFavorite(item.idPlayer);
-  return (
-    <TouchableOpacity onPress={() => openModal(item)} style={styles.card}>
+        renderItem={({ item }) => {
+          const fav = isFavorite(item.idPlayer);
+          return (
+            <TouchableOpacity onPress={() => openModal(item)} style={styles.card}>
+              {item.strThumb && (
+                <Image source={{ uri: item.strThumb }} style={styles.image} />
+              )}
+              <View style={styles.info}>
+                <Text style={styles.name}>{item.strPlayer}</Text>
+                <Text>
+                  {item.strTeam} — {item.strPosition}
+                </Text>
 
-            {item.strThumb && (
-              <Image source={{ uri: item.strThumb }} style={styles.image} />
-            )}
-            <View style={styles.info}>
-              <Text style={styles.name}>{item.strPlayer}</Text>
-              <Text>{item.strTeam} — {item.strPosition}</Text>
-            </View>
-<TouchableOpacity onPress={() => openModal(item)} style={styles.card}>
-  {/* Player card contents here */}
-  <View>
-    {/* Favorite Button */}
-    <Pressable
-      onPress={() =>
-        toggle({
-          idPlayer: item.idPlayer,
-          strPlayer: item.strPlayer,
-          strThumb: item.strThumb,
-          strTeam: item.strTeam,
-          strPosition: item.strPosition,
-        })
-      }
-      style={({ pressed }) => [
-        styles.favBtn,
-        fav ? styles.favBtnOn : styles.favBtnOff,
-        pressed && { opacity: 0.7 },
-      ]}
-    >
-      <Text style={styles.favBtnText}>
-        {fav ? 'Unfavorite' : 'Favorite'}
-      </Text>
-    </Pressable>
-  </View>
-</TouchableOpacity>
-
+                <Pressable
+                  onPress={() =>
+                    toggle({
+                      idPlayer: item.idPlayer,
+                      strPlayer: item.strPlayer,
+                      strThumb: item.strThumb,
+                      strTeam: item.strTeam,
+                      strPosition: item.strPosition,
+                    })
+                  }
+                  style={({ pressed }) => [
+                    styles.favBtn,
+                    fav ? styles.favBtnOn : styles.favBtnOff,
+                    pressed && { opacity: 0.7 },
+                  ]}
+                >
+                  <Text style={styles.favBtnText}>
+                    {fav ? 'Unfavorite' : 'Favorite'}
+                  </Text>
+                </Pressable>
+              </View>
+            </TouchableOpacity>
+          );
+        }}
       />
 
       <Modal
@@ -120,17 +119,29 @@ renderItem={({ item }) => {
           <View style={styles.modalContent}>
             {selectedPlayer?.strThumb && (
               <Image
-                source={{ uri: selectedPlayer.strThumb || selectedPlayer.strThumb }}
+                source={{ uri: selectedPlayer.strThumb }}
                 style={styles.modalImage}
               />
             )}
-          <Text style={styles.modalName}>{selectedPlayer?.strPlayer}</Text>
-          <Text style={styles.modalText}>Team: {selectedPlayer?.strTeam}</Text>
-          <Text style={styles.modalText}>Position: {selectedPlayer?.strPosition}</Text>
-          {selectedPlayer?.strNationality && <Text style={styles.modalText}>Nationality: {selectedPlayer.strNationality}</Text>}
-          {selectedPlayer?.strSport && <Text style={styles.modalText}>Sport: {selectedPlayer.strSport}</Text>}
-          {selectedPlayer?.strStatus && <Text style={styles.modalText}>Status: {selectedPlayer.strStatus}</Text>}
-          {selectedPlayer?.dateBorn && <Text style={styles.modalText}>Born: {selectedPlayer.dateBorn}</Text>}
+            <Text style={styles.modalName}>{selectedPlayer?.strPlayer}</Text>
+            <Text style={styles.modalText}>Team: {selectedPlayer?.strTeam}</Text>
+            <Text style={styles.modalText}>
+              Position: {selectedPlayer?.strPosition}
+            </Text>
+            {selectedPlayer?.strNationality && (
+              <Text style={styles.modalText}>
+                Nationality: {selectedPlayer.strNationality}
+              </Text>
+            )}
+            {selectedPlayer?.strSport && (
+              <Text style={styles.modalText}>Sport: {selectedPlayer.strSport}</Text>
+            )}
+            {selectedPlayer?.strStatus && (
+              <Text style={styles.modalText}>Status: {selectedPlayer.strStatus}</Text>
+            )}
+            {selectedPlayer?.dateBorn && (
+              <Text style={styles.modalText}>Born: {selectedPlayer.dateBorn}</Text>
+            )}
             <Button title="Close" onPress={closeModal} />
           </View>
         </View>
@@ -155,23 +166,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: '#fff',
     marginBottom: 12,
-    padding: 25, 
-    borderRadius: 10, 
+    padding: 25,
+    borderRadius: 10,
     alignItems: 'center',
-    minHeight: 120, 
+    minHeight: 120,
   },
   image: {
-    width: 110,   
+    width: 110,
     height: 110,
     borderRadius: 25,
-    marginRight: 16, 
+    marginRight: 16,
   },
   info: {
     flex: 1,
   },
   name: {
     fontWeight: 'bold',
-    fontSize: 25, 
+    fontSize: 25,
   },
   modalContainer: {
     flex: 1,
@@ -197,25 +208,25 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 8,
   },
-modalText: {
-  fontSize: 18,
-  marginBottom: 6,
-},
-favBtn: {
-  paddingVertical: 8,
-  paddingHorizontal: 12,
-  borderRadius: 8,
-  alignItems: 'center',
-},
-favBtnOn: {
-  backgroundColor: '#030202ff',
-},
-favBtnOff: {
-  backgroundColor: '#fa5c5c',
-},
-favBtnText: {
-  color: '#fff',
-  fontWeight: '600',
-},
-
+  modalText: {
+    fontSize: 18,
+    marginBottom: 6,
+  },
+  favBtn: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  favBtnOn: {
+    backgroundColor: '#030202ff',
+  },
+  favBtnOff: {
+    backgroundColor: '#fa5c5c',
+  },
+  favBtnText: {
+    color: '#fff',
+    fontWeight: '600',
+  },
 });
