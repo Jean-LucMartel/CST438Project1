@@ -1,5 +1,5 @@
-import React, {createContext, useContext, useEffect, useMemo, useState, ReactNode} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 
 type FavPlayer = {
   idPlayer: string;
