@@ -540,6 +540,33 @@ export async function searchMlbPlayersByName(
   );
 }
 
+export async function getRankingLists(db: SQLiteDatabase, userId: number) {
+  return db.getAllAsync<{ id: number; title: string; sport: string; created_at: number; updated_at: number }>(
+    `SELECT id, title, sport, created_at, updated_at 
+     FROM ranking_lists
+     WHERE user_id = ?
+     ORDER BY updated_at DESC`,
+    [userId]
+  );
+}
+
+export async function getRankingListItems(db: SQLiteDatabase, listId: number) {
+  return db.getAllAsync<{
+    rank: number;
+    player_id: string;
+    display_name: string;
+  }>(
+    `SELECT r.rank, r.player_id,
+            COALESCE(p.display_name, TRIM(p.first_name||' '||p.last_name)) as display_name
+     FROM ranking_list_items r
+     JOIN players p ON p.sport = r.sport AND p.player_id = r.player_id
+     WHERE r.list_id = ?
+     ORDER BY r.rank ASC`,
+    [listId]
+  );
+}
+
+
 export async function seedExampleMlbPlayers(db: SQLiteDatabase) {
   const sample: MlbApiRow = {
     position: "LF",

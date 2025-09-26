@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Tabs } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { FavoritesProvider } from "../favorites/FavoritesProvider"
+import { FavoritesProvider } from "../favorites/FavoritesProvider";
 
 export default function TabLayout() {
   return (
