@@ -2,13 +2,11 @@ import React, { useState } from 'react';
 import {
   FlatList,
   Image,
-  Modal,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 import { useFavorites } from '../favorites/FavoritesProvider';
 import { Team } from '../navigation/types';
@@ -40,120 +38,95 @@ export default function TeamsScreen() {
     }
   };
 
-const renderTeam = ({ item }: { item: Team }) => {
-  const fav = isFavorite(item.idTeam);
+  const renderTeam = ({ item }: { item: Team }) => {
+    const fav = isFavorite(item.idTeam);
 
-  return (
-    <View style={styles.item}>
-      {item.strBadge ? (
-        <Image source={{ uri: item.strBadge }} style={styles.logo} />
-      ) : (
-        <View style={styles.logoPlaceholder} />
-      )}
-      <View style={styles.info}>
-        <Text style={styles.name}>{item.strTeam}</Text>
+    return (
+      <View style={styles.item}>
+        {item.strBadge ? (
+          <Image source={{ uri: item.strBadge }} style={styles.logo} />
+        ) : (
+          <View style={styles.logoPlaceholder} />
+        )}
+        <View style={styles.info}>
+          <Text style={styles.name}>{item.strTeam}</Text>
 
-        {/* View Team Background button */}
-        <Pressable
-          onPress={() => {
-            setSelectedTeam(item);
-            setModalVisible(true);
-          }}
-          style={({ pressed }) => [
-            styles.bgBtn,
-            pressed && { opacity: 0.7 },
-          ]}
-        >
-          <Text style={styles.bgBtnText}>View Team Background</Text>
-        </Pressable>
-
-        {/* Favorite / Unfavorite button */}
-        <Pressable
-          onPress={() =>
-            toggle({
-              idPlayer: item.idTeam,
-              strPlayer: item.strTeam,
-              strThumb: item.strBadge,
-              strTeam: item.strLeague,
-              strPosition: 'Team',
-            })
-          }
-          style={({ pressed }) => [
-            styles.favBtn,
-            fav ? styles.favBtnOn : styles.favBtnOff,
-            pressed && { opacity: 0.7 },
-          ]}
-        >
-          <Text style={styles.favBtnText}>
-            {fav ? 'Unfavorite' : 'Favorite'}
-          </Text>
-        </Pressable>
-      </View>
-    </View>
-  );
-};
-
-
-  return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Select a Sport</Text>
-      <View style={styles.sportButtonContainer}>
-        {sports.map((sport) => (
-          <TouchableOpacity
-            key={sport}
-            style={[
-              styles.sportButton,
-              selectedSport === sport && styles.selectedSportButton,
+          {/* View Team Background button */}
+          <Pressable
+            onPress={() => {
+              setSelectedTeam(item);
+              setModalVisible(true);
+            }}
+            style={({ pressed }) => [
+              styles.bgBtn,
+              pressed && { opacity: 0.7 },
             ]}
-            onPress={() => fetchTeams(sport)}
           >
-            <Text
-              style={[
-                styles.sportButtonText,
-                selectedSport === sport && styles.selectedSportButtonText,
-              ]}
-            >
-              {sport}
+            <Text style={styles.bgBtnText}>View Team Background</Text>
+          </Pressable>
+
+          {/* Favorite / Unfavorite button */}
+          <Pressable
+            onPress={() =>
+              toggle({
+                idPlayer: item.idTeam,
+                strPlayer: item.strTeam,
+                strThumb: item.strBadge,
+                strTeam: item.strLeague,
+                strPosition: 'Team',
+              })
+            }
+            style={({ pressed }) => [
+              styles.favBtn,
+              fav ? styles.favBtnOn : styles.favBtnOff,
+              pressed && { opacity: 0.7 },
+            ]}
+          >
+            <Text style={styles.favBtnText}>
+              {fav ? 'Unfavorite' : 'Favorite'}
             </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-
-      {selectedSport && (
-        <>
-          <Text style={styles.subTitle}>{selectedSport} Teams</Text>
-          <FlatList
-            data={teams}
-            keyExtractor={(item) => item.idTeam}
-            renderItem={renderTeam}
-          />
-        </>
-      )}
-
-      <Modal
-        visible={modalVisible}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>{selectedTeam?.strTeam}</Text>
-            <ScrollView style={styles.modalBody}>
-              <Text>
-                {selectedTeam?.strDescriptionEN || 'No description available.'}
-              </Text>
-            </ScrollView>
-            <Pressable
-              onPress={() => setModalVisible(false)}
-              style={styles.closeButton}
-            >
-              <Text style={styles.closeButtonText}>Close</Text>
-            </Pressable>
-          </View>
+          </Pressable>
         </View>
-      </Modal>
-    </ScrollView>
+      </View>
+    );
+  };
+
+  return (
+    <FlatList
+      data={teams}
+      keyExtractor={(item) => item.idTeam}
+      renderItem={renderTeam}
+      contentContainerStyle={styles.container}
+      ListHeaderComponent={
+        <>
+          <Text style={styles.title}>Select a Sport</Text>
+          <View style={styles.sportButtonContainer}>
+            {sports.map((sport) => (
+              <TouchableOpacity
+                key={sport}
+                style={[
+                  styles.sportButton,
+                  selectedSport === sport && styles.selectedSportButton,
+                ]}
+                onPress={() => fetchTeams(sport)}
+              >
+                <Text
+                  style={[
+                    styles.sportButtonText,
+                    selectedSport === sport && styles.selectedSportButtonText,
+                  ]}
+                >
+                  {sport}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+          {selectedSport && (
+            <Text style={styles.subTitle}>{selectedSport} Teams</Text>
+          )}
+        </>
+      }
+    />
   );
 }
 
@@ -206,8 +179,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   logo: {
-    width: 70,
-    height: 70,
+    width: 80,
+    height: 80,
     marginRight: 16,
   },
   info: {
@@ -241,43 +214,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: '600',
   },
-  viewDetails: {
-    color: '#4A90E2',
-    fontWeight: 'bold',
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  modalContent: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 20,
-    width: '100%',
-    maxHeight: '80%',
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 12,
-  },
-  modalBody: {
-    marginBottom: 20,
-  },
-  closeButton: {
-    backgroundColor: '#4A90E2',
-    paddingVertical: 10,
-    borderRadius: 6,
-    alignItems: 'center',
-  },
-  closeButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-    bgBtn: {
+  bgBtn: {
     backgroundColor: '#4A90E2',
     paddingVertical: 6,
     paddingHorizontal: 10,
@@ -289,5 +226,4 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: '600',
   },
-
 });

@@ -1,8 +1,8 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { View, Text, StyleSheet, ScrollView, TextInput, Alert, Button as RNButton } from "react-native";
+import { createRankingList, getFavoritedPlayersBySport, saveRankingListItems, useDb, type FavPlayer } from "@/lib/db";
 import { Picker } from "@react-native-picker/picker";
 import { router } from "expo-router";
-import { useDb, getFavoritedPlayersBySport, createRankingList, saveRankingListItems, type FavPlayer } from "@/lib/db";
+import React, { useEffect, useMemo, useState } from "react";
+import { Alert, Button as RNButton, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
 // TODO: wire this to real auth
 const getCurrentUserId = async () => 1;
