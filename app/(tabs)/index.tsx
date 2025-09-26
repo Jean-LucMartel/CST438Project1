@@ -1,8 +1,6 @@
-import { Text, View, StyleSheet } from 'react-native';
-import { Link } from 'expo-router'; 
+import Button from '@/components/Button';
 import { router } from 'expo-router';
-import Button from '@/components/Button'
-import PlayerCard from '@/components/PlayerCard'
+import { StyleSheet, Text, View } from 'react-native';
 
 export default function Index() {
   return (
@@ -35,3 +33,4 @@ const styles = StyleSheet.create({
     flex: 2,
   }
 });
+
