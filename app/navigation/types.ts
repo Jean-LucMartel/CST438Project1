@@ -11,6 +11,7 @@ export interface Team {
   strTeam: string;
   strBadge?: string;
   strDescriptionEN?: string;
+  strLeague: string;
 }
 
 export interface Player {
