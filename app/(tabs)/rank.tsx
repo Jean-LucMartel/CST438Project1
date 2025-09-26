@@ -138,3 +138,4 @@ const styles = StyleSheet.create({
   rankNum: { width: 28, textAlign: "center", fontWeight: "800", fontSize: 16 },
   pickerWrap: { flex: 1, borderWidth: 1, borderColor: "#e5e5e5", borderRadius: 10, overflow: "hidden", backgroundColor: "#fff" },
 });
+
