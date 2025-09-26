@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import {
   FlatList,
   Image,
+  Modal,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
 import { useFavorites } from '../favorites/FavoritesProvider';
 import { Team } from '../navigation/types';
@@ -92,41 +94,70 @@ export default function TeamsScreen() {
   };
 
   return (
-    <FlatList
-      data={teams}
-      keyExtractor={(item) => item.idTeam}
-      renderItem={renderTeam}
-      contentContainerStyle={styles.container}
-      ListHeaderComponent={
-        <>
-          <Text style={styles.title}>Select a Sport</Text>
-          <View style={styles.sportButtonContainer}>
-            {sports.map((sport) => (
-              <TouchableOpacity
-                key={sport}
-                style={[
-                  styles.sportButton,
-                  selectedSport === sport && styles.selectedSportButton,
-                ]}
-                onPress={() => fetchTeams(sport)}
-              >
-                <Text
+    <View style={{ flex: 1 }}>
+      <FlatList
+        data={teams}
+        keyExtractor={(item) => item.idTeam}
+        renderItem={renderTeam}
+        contentContainerStyle={styles.container}
+        ListHeaderComponent={
+          <>
+            <Text style={styles.title}>Select a Sport</Text>
+            <View style={styles.sportButtonContainer}>
+              {sports.map((sport) => (
+                <TouchableOpacity
+                  key={sport}
                   style={[
-                    styles.sportButtonText,
-                    selectedSport === sport && styles.selectedSportButtonText,
+                    styles.sportButton,
+                    selectedSport === sport && styles.selectedSportButton,
                   ]}
+                  onPress={() => fetchTeams(sport)}
                 >
-                  {sport}
-                </Text>
-              </TouchableOpacity>
-            ))}
+                  <Text
+                    style={[
+                      styles.sportButtonText,
+                      selectedSport === sport && styles.selectedSportButtonText,
+                    ]}
+                  >
+                    {sport}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+            {selectedSport && (
+              <Text style={styles.subTitle}>{selectedSport} Teams</Text>
+            )}
+          </>
+        }
+      />
+
+      {/* Team Background Modal */}
+      <Modal
+        visible={modalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <ScrollView>
+              <Text style={styles.modalTitle}>
+                {selectedTeam?.strTeam}
+              </Text>
+              <Text style={styles.modalText}>
+                {selectedTeam?.strDescriptionEN || 'No background available.'}
+              </Text>
+            </ScrollView>
+            <Pressable
+              onPress={() => setModalVisible(false)}
+              style={styles.closeBtn}
+            >
+              <Text style={styles.closeBtnText}>Close</Text>
+            </Pressable>
           </View>
-          {selectedSport && (
-            <Text style={styles.subTitle}>{selectedSport} Teams</Text>
-          )}
-        </>
-      }
-    />
+        </View>
+      </Modal>
+    </View>
   );
 }
 
@@ -225,5 +256,42 @@ const styles = StyleSheet.create({
   bgBtnText: {
     color: '#fff',
     fontWeight: '600',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.8)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 20,
+    width: '100%',
+    maxHeight: '80%',
+  },
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  modalText: {
+    fontSize: 16,
+    lineHeight: 22,
+    marginBottom: 20,
+  },
+  closeBtn: {
+    backgroundColor: '#4A90E2',
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  closeBtnText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 16,
   },
 });
