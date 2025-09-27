@@ -19,7 +19,7 @@ export default function TabLayout() {
         options={{ 
           title: 'Login',
           tabBarIcon: ({ color, focused }) => (
-              <Ionicons name={focused ? 'home-sharp' : 'home-outline'} color={color} size={24} />
+              <Ionicons name={focused ? 'log-in-outline' : 'log-in'} color={color} size={24} />
             )
         }} />
 
@@ -46,6 +46,16 @@ export default function TabLayout() {
         )
 
       }} />
+
+      <Tabs.Screen
+      name="savedrankings"
+      options={{
+        title: "Saved Rankings",
+        tabBarIcon: ({ color, size }) => (
+          <Ionicons name="list" size={size} color={color} />
+        ),
+      }}
+    />
 
               //navigation button for teams
     <Tabs.Screen

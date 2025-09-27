@@ -566,6 +566,10 @@ export async function getRankingListItems(db: SQLiteDatabase, listId: number) {
   );
 }
 
+export async function deleteRankingList(db: SQLiteDatabase, listId: number) {
+  await db.runAsync(`DELETE FROM ranking_lists WHERE id = ?`, [listId]);
+}
+
 
 export async function seedExampleMlbPlayers(db: SQLiteDatabase) {
   const sample: MlbApiRow = {

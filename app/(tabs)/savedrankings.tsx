@@ -1,7 +1,7 @@
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { getRankingListItems, getRankingLists, useDb } from '../../lib/db';
+import { Alert, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { deleteRankingList, getRankingListItems, getRankingLists, useDb } from '../../lib/db';
 
 export default function SavedRankingsScreen() {
   const db = useDb();
@@ -9,21 +9,41 @@ export default function SavedRankingsScreen() {
   const [selectedList, setSelectedList] = useState<any | null>(null);
   const [items, setItems] = useState<any[]>([]);
 
-  // Reload whenever this screen gains focus
+  const refreshLists = useCallback(async () => {
+    const userId = 1; // replace with logged-in user ID
+    const result = await getRankingLists(db, userId);
+    setLists(result);
+  }, [db]);
+
   useFocusEffect(
     useCallback(() => {
-      (async () => {
-        const userId = 1; // replace with logged-in user ID
-        const result = await getRankingLists(db, userId);
-        setLists(result);
-      })();
-    }, [db])
+      refreshLists();
+    }, [refreshLists])
   );
 
   const openList = async (list: any) => {
     setSelectedList(list);
     const result = await getRankingListItems(db, list.id);
     setItems(result);
+  };
+
+  const removeList = async (listId: number) => {
+    Alert.alert(
+      'Delete Ranking',
+      'Are you sure you want to delete this ranking?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            await deleteRankingList(db, listId);
+            setSelectedList(null);
+            await refreshLists();
+          },
+        },
+      ]
+    );
   };
 
   if (selectedList) {
@@ -39,9 +59,14 @@ export default function SavedRankingsScreen() {
             </Text>
           )}
         />
-        <TouchableOpacity onPress={() => setSelectedList(null)} style={styles.backBtn}>
-          <Text style={styles.backBtnText}>Back to All Rankings</Text>
-        </TouchableOpacity>
+        <View style={styles.buttonRow}>
+          <TouchableOpacity onPress={() => setSelectedList(null)} style={styles.backBtn}>
+            <Text style={styles.backBtnText}>Back</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => removeList(selectedList.id)} style={styles.deleteBtn}>
+            <Text style={styles.deleteBtnText}>Delete</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }
@@ -55,7 +80,6 @@ export default function SavedRankingsScreen() {
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => openList(item)} style={styles.listCard}>
             <Text style={styles.listTitle}>{item.title}</Text>
-            <Text style={styles.sport}>Sport: {item.sport}</Text>
           </TouchableOpacity>
         )}
       />
@@ -75,12 +99,27 @@ const styles = StyleSheet.create({
   listTitle: { fontSize: 18, fontWeight: '600' },
   sport: { fontSize: 14, color: '#555' },
   item: { fontSize: 16, paddingVertical: 6 },
-  backBtn: {
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginTop: 20,
+  },
+  backBtn: {
+    flex: 1,
+    marginRight: 8,
     padding: 12,
     backgroundColor: '#0077cc',
     borderRadius: 6,
     alignItems: 'center',
   },
   backBtnText: { color: '#fff', fontWeight: '600' },
+  deleteBtn: {
+    flex: 1,
+    marginLeft: 8,
+    padding: 12,
+    backgroundColor: '#cc0000',
+    borderRadius: 6,
+    alignItems: 'center',
+  },
+  deleteBtnText: { color: '#fff', fontWeight: '600' },
 });
