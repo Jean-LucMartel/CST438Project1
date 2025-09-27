@@ -23,7 +23,7 @@ export default function Index() {
           style={styles.card}
           onPress={() => router.push('/(tabs)/teams')}
         >
-          <MaterialIcons name="groups" size={40} color="#fff" />
+          <MaterialIcons name="group" size={40} color="#fff" />
           <Text style={styles.cardText}>View Teams</Text>
         </TouchableOpacity>
 
@@ -32,7 +32,7 @@ export default function Index() {
           style={styles.card}
           onPress={() => router.push('/(tabs)/rank')}
         >
-          <FontAwesome5 name="medal" size={40} color="#fff" />
+          <FontAwesome5 name="trophy" size={40} color="#fff" />
           <Text style={styles.cardText}>Rankings</Text>
         </TouchableOpacity>
 
