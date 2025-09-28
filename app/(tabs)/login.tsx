@@ -31,7 +31,7 @@ export default function LoginScreen() {
       setBusy(true);
       const user = await loginWithEmailPassword(db, email, password);
       if (!user) return Alert.alert("Login failed", "Email or password is incorrect.");
-      router.replace("/(tabs)/index");
+      router.replace("/(tabs)");
     } catch (e: any) {
       Alert.alert("Error", e?.message ?? String(e));
     } finally {
@@ -55,7 +55,7 @@ export default function LoginScreen() {
       });
       if (!user) return Alert.alert("Sign up error", "Could not create the account.");
       Alert.alert("Welcome!", `Account created for @${user.username}`);
-      router.replace("/(tabs)/index");
+      router.replace("/(tabs)");
     } catch (e: any) {
       Alert.alert("Sign up error", e?.message ?? String(e));
     } finally {
