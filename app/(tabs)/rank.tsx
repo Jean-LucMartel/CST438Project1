@@ -1,140 +1,223 @@
-import { createRankingList, getFavoritedPlayersBySport, saveRankingListItems, useDb, type FavPlayer } from "@/lib/db";
-import { Picker } from "@react-native-picker/picker";
-import { router } from "expo-router";
-import React, { useEffect, useMemo, useState } from "react";
-import { Alert, Button as RNButton, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import React, { useState } from 'react';
+import {
+  Alert,
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { createRankingList, saveRankingListItems, useDb } from '../../lib/db';
+import { useFavorites } from '../favorites/FavoritesProvider';
 
-// TODO: wire this to real auth
-const getCurrentUserId = async () => 1;
-
-const RANKS = Array.from({ length: 10 }, (_, i) => i + 1);
-
-export default function CreateTopTenScreen() {
+export default function RankScreen() {
+  const { favorites } = useFavorites();
   const db = useDb();
-  const [sport, setSport] = useState<"mlb" | "nba" | "nfl" | "nhl" | string>("mlb");
-  const [title, setTitle] = useState("My Top 10");
-  const [favorites, setFavorites] = useState<FavPlayer[]>([]);
-  const [selected, setSelected] = useState<(string | null)[]>(RANKS.map(() => null));
-  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    (async () => {
-      setLoading(true);
-      try {
-        const userId = await getCurrentUserId();
-        const favs = await getFavoritedPlayersBySport(db, userId, sport);
-        setFavorites(favs);
-        // Clear selections when sport changes
-        setSelected(RANKS.map(() => null));
-      } finally {
-        setLoading(false);
+  const [selected, setSelected] = useState<string[]>([]); // stores ranked order
+  const [rankingTitle, setRankingTitle] = useState('');
+
+  const toggleRank = (id: string) => {
+    if (selected.includes(id)) {
+      // remove from ranking
+      setSelected(selected.filter((x) => x !== id));
+    } else {
+      // add to ranking (max 10)
+      if (selected.length >= 10) {
+        Alert.alert('Limit reached', 'You can only rank up to 10 items.');
+        return;
       }
-    })();
-  }, [db, sport]);
+      setSelected([...selected, id]);
+    }
+  };
 
-  const chosenIds = useMemo(() => new Set(selected.filter(Boolean) as string[]), [selected]);
+const saveRanking = async () => {
+  if (!rankingTitle.trim()) {
+    Alert.alert('Missing title', 'Please enter a ranking name.');
+    return;
+  }
+  if (selected.length === 0) {
+    Alert.alert('No ranking', 'Please select at least one favorite.');
+    return;
+  }
 
-  function setRank(rankIndex: number, playerId: string | null) {
-    setSelected((prev) => {
-      const next = [...prev];
-      next[rankIndex] = playerId;
-      return next;
+  try {
+    const sport = 'mlb'; // replace later if you add multiple sports
+    const userId = 1;    // replace with logged-in user id
+
+    // 1. Ensure each selected player exists in the `players` table
+    for (const playerId of selected) {
+      // look up the player object from favorites
+      const fav = Object.values(favorites).find(f => f.idPlayer === playerId);
+      if (fav) {
+        await db.runAsync(
+          `INSERT OR IGNORE INTO players (sport, player_id, first_name, last_name, display_name)
+           VALUES (?, ?, ?, ?, ?)`,
+          [
+            sport,
+            fav.idPlayer,
+            fav.strPlayer?.split(' ')[0] ?? null, // crude split for first name
+            fav.strPlayer?.split(' ').slice(1).join(' ') ?? null, // rest as last name
+            fav.strPlayer ?? fav.strTeam ?? null,
+          ]
+        );
+      }
+    }
+
+    // 2. Create a new ranking list
+    const listId = await createRankingList(db, {
+      userId,
+      sport,
+      title: rankingTitle.trim(),
     });
-  }
 
-  function optionsForRank(rankIndex: number) {
-    const keepId = selected[rankIndex]; // allow keeping the existing choice
-    return favorites.filter((p) => p.player_id === keepId || !chosenIds.has(p.player_id));
-  }
+    // 3. Save ranked items
+    const items = selected.map((playerId, idx) => ({
+      rank: idx + 1,
+      player_id: playerId,
+    }));
 
-  async function handleSave() {
-    const userId = await getCurrentUserId();
-    if (!title.trim()) {
-      Alert.alert("Add a title", "Please enter a title for your Top 10 list.");
-      return;
-    }
-    // Require all ranks to be chosen; change if you want partial saves
-    if (selected.some((v) => !v)) {
-      Alert.alert("Select all ranks", "Please select a player for each ranking 1 through 10.");
-      return;
-    }
-    const items = selected.map((player_id, i) => ({ rank: i + 1, player_id: player_id! }));
+    await saveRankingListItems(db, listId, sport, items);
 
-    try {
-      setLoading(true);
-      const listId = await createRankingList(db, { userId, sport, title: title.trim() });
-      await saveRankingListItems(db, listId, sport, items);
-      Alert.alert("Saved!", "Your Top 10 has been saved.", [
-        { text: "OK", onPress: () => router.back() },
-      ]);
-    } catch (e: any) {
-      Alert.alert("Error", e?.message ?? String(e));
-    } finally {
-      setLoading(false);
-    }
+    Alert.alert('Success', `Ranking "${rankingTitle}" saved!`);
+    setSelected([]);
+    setRankingTitle('');
+  } catch (err) {
+    console.error(err);
+    Alert.alert('Error', 'Failed to save ranking.');
   }
+};
+
+
+  const renderItem = ({ item }: any) => {
+    const isRanked = selected.includes(item.idPlayer);
+    const rankNumber = selected.indexOf(item.idPlayer) + 1;
+
+    return (
+      <TouchableOpacity
+        style={[styles.card, isRanked && styles.cardSelected]}
+        onPress={() => toggleRank(item.idPlayer)}
+      >
+        <View style={styles.itemRow}>
+          {item.strThumb ? (
+            <Image source={{ uri: item.strThumb }} style={styles.thumb} />
+          ) : (
+            <View style={styles.thumbPlaceholder} />
+          )}
+
+          <Text style={styles.name}>
+            {item.strPlayer || item.strTeam}
+          </Text>
+        </View>
+
+        {isRanked && <Text style={styles.rank}>#{rankNumber}</Text>}
+      </TouchableOpacity>
+    );
+  };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.h1}>Create Top 10</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Create Top 10</Text>
+      <Text style={styles.subtitle}>
+        Name your ranking and tap items to rank them.
+      </Text>
 
-      
-      <View style={styles.row}>
-        <Text style={styles.label}>Sport</Text>
-        <View style={styles.pickerWrap}>
-          <Picker selectedValue={sport} onValueChange={(v) => setSport(v)}>
-            <Picker.Item label="MLB" value="mlb" />
-            <Picker.Item label="NBA" value="nba" />
-            <Picker.Item label="NFL" value="nfl" />
-            <Picker.Item label="NHL" value="nhl" />
-          </Picker>
-        </View>
-      </View>
+      <TextInput
+        style={styles.input}
+        placeholder="Ranking Name"
+        value={rankingTitle}
+        onChangeText={setRankingTitle}
+      />
 
-      <View style={styles.row}>
-        <Text style={styles.label}>Title</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="My Top 10"
-          value={title}
-          onChangeText={setTitle}
-        />
-      </View>
+      <FlatList
+        data={Object.values(favorites)}
+        keyExtractor={(item) => item.idPlayer}
+        renderItem={renderItem}
+        contentContainerStyle={{ paddingBottom: 40 }}
+      />
 
-      <View style={{ height: 8 }} />
-
-      {RANKS.map((rank, i) => (
-        <View key={rank} style={styles.rankRow}>
-          <Text style={styles.rankNum}>{rank}</Text>
-          <View style={styles.pickerWrap}>
-            <Picker
-              enabled={!loading && favorites.length > 0}
-              selectedValue={selected[i]}
-              onValueChange={(val) => setRank(i, val)}
-            >
-              <Picker.Item label="-- Select player --" value={null as any} />
-              {optionsForRank(i).map((p) => (
-                <Picker.Item key={p.player_id} label={p.display_name ?? p.player_id} value={p.player_id} />
-              ))}
-            </Picker>
-          </View>
-        </View>
-      ))}
-
-      <View style={{ height: 12 }} />
-      <RNButton title={loading ? "Saving..." : "Save Top 10"} disabled={loading} onPress={handleSave} />
-      <View style={{ height: 24 }} />
-    </ScrollView>
+      <TouchableOpacity style={styles.saveBtn} onPress={saveRanking}>
+        <Text style={styles.saveBtnText}>Save Ranking</Text>
+      </TouchableOpacity>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 16, gap: 12 },
-  h1: { fontSize: 24, fontWeight: "800", textAlign: "center", marginVertical: 8 },
-  row: { gap: 6 },
-  label: { fontWeight: "600" },
-  input: { borderWidth: 1, borderColor: "#e5e5e5", borderRadius: 10, padding: 10, backgroundColor: "#fff" },
-  rankRow: { flexDirection: "row", alignItems: "center", gap: 12 },
-  rankNum: { width: 28, textAlign: "center", fontWeight: "800", fontSize: 16 },
-  pickerWrap: { flex: 1, borderWidth: 1, borderColor: "#e5e5e5", borderRadius: 10, overflow: "hidden", backgroundColor: "#fff" },
+  container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: '#fff',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  subtitle: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 6,
+    padding: 10,
+    marginBottom: 12,
+    fontSize: 16,
+  },
+  card: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    backgroundColor: '#eee',
+    padding: 14,
+    marginBottom: 10,
+    borderRadius: 8,
+  },
+  cardSelected: {
+    backgroundColor: '#cce5ff',
+  },
+  name: {
+    fontSize: 18,
+    fontWeight: '500',
+  },
+  rank: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#0077cc',
+  },
+  saveBtn: {
+    backgroundColor: '#0077cc',
+    padding: 14,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  saveBtnText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  thumb: {
+    width: 70,
+    height: 70,
+    borderRadius: 20,
+    marginRight: 16,
+  },
+  thumbPlaceholder: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#ccc',
+    marginRight: 12,
+  },
+  itemRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
 });
