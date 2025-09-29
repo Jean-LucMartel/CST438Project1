@@ -90,6 +90,16 @@ Elijah Hart:
 
 Andrew Arreola:
 
+### How was the challenge addressed? 
+
+Jose Valdez-Fernandez: I handled the challenge by taking extra time to learn the tools through tutorials and practice. As a team, we stayed organized by dividing tasks clearly and checking in often to keep everything on track.
+
+Jean-Luc Martel:
+
+Elijah Hart: 
+
+Andrew Arreola:
+
 ### Favorite / most interesting part of this project
 
 Jose Valdez-Fernandez: My favorite part was successfully connecting the API to the app and seeing all the team and player information displayed on the screen, which made the project feel complete and rewarding.
