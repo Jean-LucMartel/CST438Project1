@@ -65,7 +65,7 @@ Jean-Luc Martel:
 
 Elijah Hart: 
 
-Andrew Arreola
+Andrew Arreola: I contributed by making the layouts for the home page as well as the favorites page. I also made favorites functional by letting users click add to favorites when searching up a player in the search page.
 
 
 ## Challenges & Solutions
@@ -78,7 +78,7 @@ Jean-Luc Martel:
 
 Elijah Hart: 
 
-Andrew Arreola:
+Andrew Arreola: A major challenge was making sure everyones work was able to merge together without any problems. We also had to handle version mismatches which lead to the application not functioning on some group members devices.
 
 ### Why was it a challenge?
 
@@ -88,7 +88,7 @@ Jean-Luc Martel:
 
 Elijah Hart: 
 
-Andrew Arreola:
+Andrew Arreola: This was a major challenge because even if everyone's work was functioning on their own, it was still difficult to get an idea of what the final project would look like once everyones work was put together. 
 
 ### How was the challenge addressed? 
 
@@ -98,7 +98,7 @@ Jean-Luc Martel:
 
 Elijah Hart: 
 
-Andrew Arreola:
+Andrew Arreola: We handled this challenge by discussing what was conflicting whenever meeting in person and resolving those conflicts. 
 
 ### Favorite / most interesting part of this project
 
@@ -108,7 +108,7 @@ Jean-Luc Martel:
 
 Elijah Hart: 
 
-Andrew Arreola:
+Andrew Arreola: My favorite part was getting to learn react native. It was interesting to me because it is a technology that I have been wanting to learn. It was nice getting to use this new technology for an actual project.
 
 ### If you could do it over, what would you change?
 
@@ -128,7 +128,7 @@ Jean-Luc Martel:
 
 Elijah Hart: 
 
-Andrew Arreola:
+Andrew Arreola: The most valuable thing that I learned was the importance of communicating what everyone's task is. Without communication it can lead to conflicts/ disagreement on what the final project should look like. 
 
 ## Conclusion
 
