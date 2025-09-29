@@ -63,7 +63,7 @@ Jose Valdez-Fernandez: I contributed by implementing the API integration and dev
 
 Jean-Luc Martel:
 
-Elijah Hart: 
+Elijah Hart: I contributed by creating the database for the app as well as helping to add some user functionality, including the top 10 ranking page, and the user profile tab. 
 
 Andrew Arreola: I contributed by making the layouts for the home page as well as the favorites page. I also made favorites functional by letting users click add to favorites when searching up a player in the search page.
 
@@ -76,7 +76,7 @@ Jose Valdez-Fernandez: A major challenge I faced was having to quickly learn and
 
 Jean-Luc Martel:
 
-Elijah Hart: 
+Elijah Hart: For me the biggest challenge was definitely integration, as I had issues testing on android initially and ran into some errors when trying to merge with other branches.
 
 Andrew Arreola: A major challenge was making sure everyones work was able to merge together without any problems. We also had to handle version mismatches which lead to the application not functioning on some group members devices.
 
@@ -86,7 +86,7 @@ Jose Valdez-Fernandez: This was a challenge because learning new technologies on
 
 Jean-Luc Martel:
 
-Elijah Hart: 
+Elijah Hart: I ended up spending much more time than I initially anticipated when trying to make my pull requests, as I had to work through many errors in order to get my builds working.
 
 Andrew Arreola: This was a major challenge because even if everyone's work was functioning on their own, it was still difficult to get an idea of what the final project would look like once everyones work was put together. 
 
@@ -96,7 +96,7 @@ Jose Valdez-Fernandez: I handled the challenge by taking extra time to learn the
 
 Jean-Luc Martel:
 
-Elijah Hart: 
+Elijah Hart: I made sure to account for the extra time it would take to integrate my work with the rest of the project.
 
 Andrew Arreola: We handled this challenge by discussing what was conflicting whenever meeting in person and resolving those conflicts. 
 
@@ -106,7 +106,7 @@ Jose Valdez-Fernandez: My favorite part was successfully connecting the API to t
 
 Jean-Luc Martel:
 
-Elijah Hart: 
+Elijah Hart: My favorite part was definitely getting to see the new pages I added after I got them working. It was very satisfying to see it after the long hours spent debugging.
 
 Andrew Arreola: My favorite part was getting to learn react native. It was interesting to me because it is a technology that I have been wanting to learn. It was nice getting to use this new technology for an actual project.
 
@@ -116,7 +116,7 @@ Jose Valdez-Fernandez: I would make sure there was clearer communication within 
 
 Jean-Luc Martel:
 
-Elijah Hart: 
+Elijah Hart: I would definitely be more proactive in resolving issues with my dev environment and try to avoid complex schemas for future databases.
 
 Andrew Arreola:
 
@@ -126,7 +126,7 @@ Jose Valdez-Fernandez: The most valuable thing I learned was experiencing what i
 
 Jean-Luc Martel:
 
-Elijah Hart: 
+Elijah Hart: The most valuable thing I learned was good time management, as I found that it was crucial for meeting our goals.
 
 Andrew Arreola: The most valuable thing that I learned was the importance of communicating what everyone's task is. Without communication it can lead to conflicts/ disagreement on what the final project should look like. 
 
