@@ -61,7 +61,7 @@ Andrew Arreola: https://github.com/Jean-LucMartel/CST438Project1/issues?q=is%3Ai
 
 Jose Valdez-Fernandez: I contributed by implementing the API integration and developing key features, including the search page for finding users, the teams page for filtering and viewing team information, and the rankings page for ranking players. In addition, I designed the home page to provide a clear and user-friendly starting point for the app.
 
-Jean-Luc Martel:
+Jean-Luc Martel: I contributed mostly to the login page and getting the functionality working on it.  I also worked on getting the correct routes for the app and made sure the app would load on every page of the application.
 
 Elijah Hart: I contributed by creating the database for the app as well as helping to add some user functionality, including the top 10 ranking page, and the user profile tab. 
 
@@ -74,7 +74,7 @@ Andrew Arreola: I contributed by making the layouts for the home page as well as
 
 Jose Valdez-Fernandez: A major challenge I faced was having to quickly learn and work with new technologies, which meant balancing learning the tools with actually applying them to the project. Another challenge was dividing the workload among team members and making sure everyone stayed on track so that all parts of the project were completed on time.
 
-Jean-Luc Martel:
+Jean-Luc Martel: A big challenge for me I faced during this project was definently merging all the branches togther and have it working every time we merged all our changes.  Another big challenge I also had during this project was figuring out how to fix bugs that caused our application at times to not run which was definetely a frustrating challenge.
 
 Elijah Hart: For me the biggest challenge was definitely integration, as I had issues testing on android initially and ran into some errors when trying to merge with other branches.
 
@@ -84,7 +84,7 @@ Andrew Arreola: A major challenge was making sure everyones work was able to mer
 
 Jose Valdez-Fernandez: This was a challenge because learning new technologies on my own was difficult, especially without constant guidance or prior experience to rely on. Additionally, working in a team required making sure everyone understood their responsibilities and staying organized so that all tasks were completed on time.
 
-Jean-Luc Martel:
+Jean-Luc Martel: This was a challenge because we couldn't move on unless we fixed our merge conflicts which was hard because we basically had to decide how to fix files with 2 different ways to write it combined into one file.  Also, fixing bugs was challenging as well because I have never worked with expo so seeing all these bugs was the first time I encountered them.
 
 Elijah Hart: I ended up spending much more time than I initially anticipated when trying to make my pull requests, as I had to work through many errors in order to get my builds working.
 
@@ -94,7 +94,7 @@ Andrew Arreola: This was a major challenge because even if everyone's work was f
 
 Jose Valdez-Fernandez: I handled the challenge by taking extra time to learn the tools through tutorials and practice. As a team, we stayed organized by dividing tasks clearly and checking in often to keep everything on track.
 
-Jean-Luc Martel:
+Jean-Luc Martel: This challenge was addressed by resolving merge conflicts on github and figuring out what was needed and what wasn't needed in a file every time there was a merge conflict.  Bugs were addressed by looking them up on google and getting help from LLMs as well.
 
 Elijah Hart: I made sure to account for the extra time it would take to integrate my work with the rest of the project.
 
@@ -104,7 +104,7 @@ Andrew Arreola: We handled this challenge by discussing what was conflicting whe
 
 Jose Valdez-Fernandez: My favorite part was successfully connecting the API to the app and seeing all the team and player information displayed on the screen, which made the project feel complete and rewarding.
 
-Jean-Luc Martel:
+Jean-Luc Martel: I think my favorite thing about the project was seeing the final result and seeing everything be tied together after combining everyones contrivutions.
 
 Elijah Hart: My favorite part was definitely getting to see the new pages I added after I got them working. It was very satisfying to see it after the long hours spent debugging.
 
@@ -114,7 +114,7 @@ Andrew Arreola: My favorite part was getting to learn react native. It was inter
 
 Jose Valdez-Fernandez: I would make sure there was clearer communication within the team by setting clear responsibilities for who is doing what and establishing deadlines for when each task should be completed.
 
-Jean-Luc Martel:
+Jean-Luc Martel: I would change having a more planned out schedule of what needed to get done as it would be easier to transition from one story issue to the other.
 
 Elijah Hart: I would definitely be more proactive in resolving issues with my dev environment and try to avoid complex schemas for future databases.
 
@@ -124,7 +124,7 @@ Andrew Arreola:
 
 Jose Valdez-Fernandez: The most valuable thing I learned was experiencing what it’s like to work on a real-world style project, where collaboration within a team is crucial to creating something meaningful.
 
-Jean-Luc Martel:
+Jean-Luc Martel: I think the most valuable thing I learned was getting a small taste of what it might be like as a software enginnering position for a company.  I learned very valuable skills such as team work, project workflow, and most importantly learning new technologies.
 
 Elijah Hart: The most valuable thing I learned was good time management, as I found that it was crucial for meeting our goals.
 
