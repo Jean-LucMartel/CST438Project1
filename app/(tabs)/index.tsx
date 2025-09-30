@@ -1,8 +1,11 @@
 import { FontAwesome5, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useAuth } from '../../auth/AuthProvider'; // 👈 import useAuth
 
 export default function Index() {
+  const { logout } = useAuth();  // 👈 grab logout function
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}> SportsHub 🏆</Text>
@@ -91,5 +94,17 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: '600',
     textAlign: 'center',
+  },
+  logoutBtn: {
+    marginTop: 20,
+    backgroundColor: '#cc0000',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+  },
+  logoutText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
